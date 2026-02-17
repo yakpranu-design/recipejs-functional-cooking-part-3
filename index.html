@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recipe App</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; }
+        .card { background: white; border: 1px solid #ccc; padding: 10px; margin: 10px; }
+        .hidden { display: none; }
+        button { margin: 5px 0; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+
+<h2>Recipe App</h2>
+<div id="recipes"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const data = [
+        {
+            id: 1,
+            name: "Pasta",
+            ingredients: ["Pasta", "Salt", "Sauce"],
+            steps: [
+                "Boil water",
+                {
+                    text: "Cook pasta",
+                    substeps: ["Add pasta", "Cook 10 min", "Drain"]
+                },
+                "Mix sauce"
+            ]
+        }
+    ];
+
+    const container = document.getElementById("recipes");
+
+    function render() {
+        container.innerHTML = "";
+
+        data.forEach(r => {
+            container.innerHTML += `
+                <div class="card">
+                    <h3>${r.name}</h3>
+                    <button onclick="toggleSteps(${r.id})">Show Steps</button>
+                    <button onclick="toggleIng(${r.id})">Show Ingredients</button>
+                    <div id="steps-${r.id}" class="hidden"></div>
+                    <div id="ing-${r.id}" class="hidden"></div>
+                </div>
+            `;
+        });
+    }
+
+    window.toggleSteps = function(id) {
+        const recipe = data.find(r => r.id === id);
+        const box = document.getElementById("steps-" + id);
+        box.classList.toggle("hidden");
+        box.innerHTML = renderSteps(recipe.steps);
+    }
+
+    window.toggleIng = function(id) {
+        const recipe = data.find(r => r.id === id);
+        const box = document.getElementById("ing-" + id);
+        box.classList.toggle("hidden");
+        box.innerHTML =
+            "<ul>" +
+            recipe.ingredients.map(i => "<li>" + i + "</li>").join("") +
+            "</ul>";
+    }
+
+    function renderSteps(steps) {
+        let html = "<ul>";
+        steps.forEach(step => {
+            if (typeof step === "string") {
+                html += "<li>" + step + "</li>";
+            } else {
+                html += "<li>" + step.text + renderSteps(step.substeps) + "</li>";
+            }
+        });
+        html += "</ul>";
+        return html;
+    }
+
+    render();
+
+});
+</script>
+
+</body>
+</html>
